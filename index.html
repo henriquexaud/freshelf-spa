@@ -3,241 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FreshElf — Controle de Validade</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #f7f9f8; color: #1a1a1a; }
-
-    header { background: #2d6a4f; color: #fff; padding: 18px 32px; display: flex; align-items: center; gap: 10px; }
-    header h1 { font-size: 1.4rem; font-weight: 600; }
-
-    main { max-width: 900px; margin: 0 auto; padding: 28px 24px; }
-
-    /* ---------- stats ---------- */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
-    .stat-card { background: #fff; border-radius: 8px; padding: 16px; border-left: 4px solid #ccc; }
-    .stat-card.total  { border-color: #4a90d9; }
-    .stat-card.ok     { border-color: #2d6a4f; }
-    .stat-card.alerta { border-color: #e07b00; }
-    .stat-card.vencido{ border-color: #c0392b; }
-    .stat-card .valor { font-size: 1.8rem; font-weight: 700; }
-    .stat-card .label { font-size: .78rem; color: #666; margin-top: 2px; }
-
-    /* ---------- alertas ---------- */
-    .secao-titulo { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
-    .alerta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 28px; }
-    .alerta-card { background: #fff; border-radius: 8px; padding: 14px; border-left: 4px solid #e07b00; }
-    .alerta-card.vencido { border-color: #c0392b; }
-    .alerta-card .ac-nome { font-weight: 600; font-size: .95rem; }
-    .alerta-card .ac-info { font-size: .8rem; color: #555; margin-top: 4px; line-height: 1.5; }
-    .alerta-card .ac-status { font-size: .78rem; font-weight: 700; margin-top: 6px; }
-    .alerta-card .ac-status.vencendo { color: #e07b00; }
-    .alerta-card .ac-status.vencido  { color: #c0392b; }
-
-    /* ---------- formulário ---------- */
-    .form-box { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 28px; }
-    .form-box h2 { font-size: 1rem; font-weight: 600; margin-bottom: 14px; }
-    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    form label { display: flex; flex-direction: column; font-size: .82rem; color: #555; }
-    form input { margin-top: 4px; padding: 7px 9px; border: 1px solid #d0d0d0; border-radius: 5px; font-size: .92rem; background: #fafafa; }
-    form input:focus { outline: 2px solid #2d6a4f; background: #fff; }
-    form button { grid-column: 1 / -1; padding: 10px; background: #2d6a4f; color: #fff; border: none; border-radius: 5px; font-size: .95rem; cursor: pointer; font-weight: 600; margin-top: 4px; }
-    form button:hover { background: #1b4332; }
-    #erro-msg { grid-column: 1 / -1; color: #c0392b; font-size: .82rem; min-height: 1.1em; }
-
-    /* ---------- tabela ---------- */
-    .tabela-box { background: #fff; border-radius: 8px; padding: 20px; }
-    .tabela-box h2 { font-size: 1rem; font-weight: 600; margin-bottom: 14px; }
-    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #ebebeb; }
-    th { background: #f5f7f6; font-size: .8rem; color: #444; text-transform: uppercase; letter-spacing: .03em; }
-    tr:last-child td { border-bottom: none; }
-
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: .75rem; font-weight: 600; }
-    .badge.ok     { background: #d8f3dc; color: #1b4332; }
-    .badge.alerta { background: #fef3cd; color: #7d4e00; }
-    .badge.vencido{ background: #fde8e8; color: #7b1b1b; }
-
-    .btn-remover { background: none; color: #c0392b; border: 1px solid #c0392b; padding: 3px 9px; border-radius: 4px; cursor: pointer; font-size: .78rem; }
-    .btn-remover:hover { background: #c0392b; color: #fff; }
-
-    .vazio { color: #aaa; font-style: italic; font-size: .9rem; padding: 8px 0; }
-  </style>
+  <title>Freshelf</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<header>
-  <h1>🧝 FreshElf — Controle de Validade</h1>
-</header>
-
 <main>
+  <header>
+    <div class="header-left">
+      <h1>Freshelf</h1>
+      <p>Controle simples de perecíveis.</p>
+      <p id="stats">Carregando estatísticas…</p>
+    </div>
+    <p id="app-feedback" class="feedback-banner" hidden aria-live="polite"></p>
+  </header>
 
-  <!-- Estatísticas (GET /produtos/estatisticas) -->
-  <div class="stats" id="stats">
-    <div class="stat-card total"><div class="valor" id="st-total">—</div><div class="label">Total de itens</div></div>
-    <div class="stat-card ok">   <div class="valor" id="st-ok">—</div>   <div class="label">Dentro do prazo</div></div>
-    <div class="stat-card alerta"><div class="valor" id="st-alerta">—</div><div class="label">Vence em breve</div></div>
-    <div class="stat-card vencido"><div class="valor" id="st-vencido">—</div><div class="label">Vencidos</div></div>
-  </div>
+  <section class="content-grid">
+    <section>
+      <div>
+        <h2>Novo produto</h2>
+      </div>
 
-  <!-- Alertas (GET /produtos/vencendo) -->
-  <p class="secao-titulo">⚠️ Alertas de Vencimento</p>
-  <div id="alertas-grid" class="alerta-grid"><p class="vazio">Carregando…</p></div>
+      <form id="form-produto">
+        <label>Nome <input id="nome" maxlength="100" required /></label>
+        <label>Quantidade <input id="quantidade" type="number" min="0" required /></label>
+        <label>Data de Validade <input id="data_validade" type="date" required /></label>
+        <button id="submit-produto" type="submit">Cadastrar</button>
+      </form>
+    </section>
 
-  <!-- Formulário -->
-  <div class="form-box">
-    <h2>Cadastrar Produto</h2>
-    <form id="form-produto">
-      <label>Nome<input id="nome" required /></label>
-      <label>Categoria<input id="categoria" required /></label>
-      <label>Quantidade<input id="quantidade" type="number" min="0" required /></label>
-      <label>Data de Validade<input id="data_validade" type="date" required /></label>
-      <label style="grid-column:1/-1">Local de Armazenamento<input id="local_armazenamento" required /></label>
-      <span id="erro-msg"></span>
-      <button type="submit">Cadastrar</button>
-    </form>
-  </div>
+    <section>
+      <div>
+        <h2>Alertas de vencimento</h2>
+      </div>
+      <div id="alertas-lista" class="alertas-grid">Carregando…</div>
+    </section>
+  </section>
 
-  <!-- Listagem (GET /produtos) -->
-  <div class="tabela-box">
-    <h2>Todos os Produtos</h2>
-    <div id="lista-produtos"><p class="vazio">Carregando…</p></div>
-  </div>
-
+  <section>
+    <div>
+      <h2>Todos os produtos</h2>
+    </div>
+    <div id="lista-produtos" class="table-wrap">Carregando…</div>
+  </section>
 </main>
 
-<script>
-const API = "http://localhost:5001";
-const DIAS_ALERTA = 7;
-
-function statusValidade(dataStr) {
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const validade = new Date(dataStr + "T00:00:00");
-  const diff = (validade - hoje) / (1000 * 60 * 60 * 24);
-  if (diff < 0)          return { texto: "Vencido",        classe: "vencido" };
-  if (diff <= DIAS_ALERTA) return { texto: "Vence em breve", classe: "alerta" };
-  return                        { texto: "Dentro do prazo", classe: "ok" };
-}
-
-function fmtData(dataStr) {
-  const [a, m, d] = dataStr.split("-");
-  return `${d}/${m}/${a}`;
-}
-
-function esc(str) {
-  const el = document.createElement("div");
-  el.textContent = str;
-  return el.innerHTML;
-}
-
-async function carregarEstatisticas() {
-  try {
-    const res = await fetch(`${API}/produtos/estatisticas`);
-    const s = await res.json();
-    document.getElementById("st-total").textContent  = s.total;
-    document.getElementById("st-ok").textContent     = s.ok;
-    document.getElementById("st-alerta").textContent = s.vencendo;
-    document.getElementById("st-vencido").textContent= s.vencidos;
-  } catch { /* ignora se API offline */ }
-}
-
-async function carregarAlertas() {
-  const grid = document.getElementById("alertas-grid");
-  try {
-    const res = await fetch(`${API}/produtos/vencendo`);
-    const lista = await res.json();
-    if (lista.length === 0) {
-      grid.innerHTML = '<p class="vazio">Nenhum item próximo do vencimento.</p>';
-      return;
-    }
-    grid.innerHTML = lista.map(p => {
-      const st = statusValidade(p.data_validade);
-      return `<div class="alerta-card ${st.classe === 'vencido' ? 'vencido' : ''}">
-        <div class="ac-nome">${esc(p.nome)}</div>
-        <div class="ac-info">
-          Categoria: ${esc(p.categoria)}<br>
-          Qtd: ${p.quantidade} · ${esc(p.local_armazenamento)}<br>
-          Validade: ${fmtData(p.data_validade)}
-        </div>
-        <div class="ac-status ${st.classe}">${st.texto}</div>
-      </div>`;
-    }).join("");
-  } catch {
-    grid.innerHTML = '<p class="vazio">Erro ao conectar com a API.</p>';
-  }
-}
-
-async function carregarProdutos() {
-  const container = document.getElementById("lista-produtos");
-  try {
-    const res = await fetch(`${API}/produtos`);
-    const produtos = await res.json();
-    if (produtos.length === 0) {
-      container.innerHTML = '<p class="vazio">Nenhum produto cadastrado.</p>';
-      return;
-    }
-    let html = `<table><thead><tr>
-      <th>Nome</th><th>Categoria</th><th>Qtd</th><th>Validade</th><th>Local</th><th>Status</th><th></th>
-    </tr></thead><tbody>`;
-    for (const p of produtos) {
-      const st = statusValidade(p.data_validade);
-      html += `<tr>
-        <td>${esc(p.nome)}</td>
-        <td>${esc(p.categoria)}</td>
-        <td>${p.quantidade}</td>
-        <td>${fmtData(p.data_validade)}</td>
-        <td>${esc(p.local_armazenamento)}</td>
-        <td><span class="badge ${st.classe}">${st.texto}</span></td>
-        <td><button class="btn-remover" onclick="removerProduto(${p.id})">Remover</button></td>
-      </tr>`;
-    }
-    html += "</tbody></table>";
-    container.innerHTML = html;
-  } catch {
-    container.innerHTML = '<p class="vazio">Erro ao conectar com a API.</p>';
-  }
-}
-
-async function recarregarTudo() {
-  await Promise.all([carregarEstatisticas(), carregarAlertas(), carregarProdutos()]);
-}
-
-async function removerProduto(id) {
-  await fetch(`${API}/produtos/${id}`, { method: "DELETE" });
-  recarregarTudo();
-}
-
-document.getElementById("form-produto").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const erroEl = document.getElementById("erro-msg");
-  erroEl.textContent = "";
-  const payload = {
-    nome: document.getElementById("nome").value.trim(),
-    categoria: document.getElementById("categoria").value.trim(),
-    quantidade: parseInt(document.getElementById("quantidade").value, 10),
-    data_validade: document.getElementById("data_validade").value,
-    local_armazenamento: document.getElementById("local_armazenamento").value.trim(),
-  };
-  try {
-    const res = await fetch(`${API}/produtos`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      erroEl.textContent = err.erro || "Erro ao cadastrar.";
-      return;
-    }
-    e.target.reset();
-    recarregarTudo();
-  } catch {
-    erroEl.textContent = "Erro ao conectar com a API.";
-  }
-});
-
-recarregarTudo();
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
