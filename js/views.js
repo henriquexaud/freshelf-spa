@@ -2,7 +2,7 @@ async function carregarEstatisticas() {
   try {
     const s = await requestJSON("/produtos/estatisticas");
     document.getElementById("stats").textContent =
-      `Total: ${s.total} | Ok: ${s.ok} | Vencendo: ${s.vencendo} | Vencidos: ${s.vencidos}`;
+      `Total: ${s.total} | Dentro do Prazo: ${s.ok} | Vencendo: ${s.vencendo} | Vencidos: ${s.vencidos}`;
   } catch {
     document.getElementById("stats").textContent = "Estatísticas indisponíveis.";
   }
