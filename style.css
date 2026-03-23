@@ -36,6 +36,21 @@ header {
   min-width: 0;
 }
 
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  object-fit: contain;
+  position: relative;
+  bottom: 5px;
+}
+
 .content-grid,
 main > section {
   margin-bottom: 24px;
@@ -173,6 +188,20 @@ td:last-child {
 }
 
 @media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .brand-row {
+    gap: 10px;
+  }
+
+  .brand-logo {
+    width: 24px;
+    height: 24px;
+  }
+
   th:nth-child(2),
   td:nth-child(2),
   th:nth-child(4),
