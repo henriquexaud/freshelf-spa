@@ -18,7 +18,7 @@ async function carregarAlertas() {
       return;
     }
     el.innerHTML = lista.map(p => {
-      const st = statusValidade(p.data_validade);
+      const st = statusValidade(p);
       return `<article class="alerta-item ${st.classe}">
         <div class="alerta-topo">
           <strong>${esc(p.nome)}</strong>
@@ -46,7 +46,7 @@ async function carregarProdutos(removendoIds) {
       <th>Nome</th><th>Qtd</th><th>Validade</th><th>Status</th><th></th>
     </tr></thead><tbody>`;
     for (const p of produtos) {
-      const st = statusValidade(p.data_validade);
+      const st = statusValidade(p);
       html += `<tr>
         <td>${esc(p.nome)}</td>
         <td>${p.quantidade}</td>

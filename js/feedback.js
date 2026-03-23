@@ -24,6 +24,8 @@ function showFeedback(targetId, message, type = "info", timeout = FEEDBACK_TIMEO
     ? `feedback-banner feedback-banner-${type}`
     : `feedback feedback-${type}`;
 
+  requestAnimationFrame(() => el.classList.add("is-visible"));
+
   if (timeout > 0) {
     const timer = window.setTimeout(() => clearFeedback(targetId), timeout);
     feedbackTimers.set(targetId, timer);
